@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriTrust AI - Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Theme Definition */
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #111827;
+            --text-secondary: #4b5563;
+            --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 40%, #fae8ff 100%);
+            --surface: rgba(255, 255, 255, 0.85);
+            --surface-solid: rgba(255, 255, 255, 0.95);
+            --nav-bg: rgba(255, 255, 255, 0.7);
+            --border: rgba(0, 0, 0, 0.1);
+            --border-light: rgba(0, 0, 0, 0.05);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            --shadow-glass-hover: 0 15px 35px 0 rgba(31, 38, 135, 0.15);
+            --badge-info-bg: #dbeafe;
+            --badge-info-text: #1e40af;
+            --badge-success-bg: #d1fae5;
+            --badge-success-text: #065f46;
+            --badge-error-bg: #fee2e2;
+            --badge-error-text: #991b1b;
+            --table-header-bg: rgba(243, 244, 246, 0.7);
+            --ai-box-bg: rgba(255, 255, 255, 0.6);
+            --img-bg: rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Definition */
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --text: #f9fafb;
+            --text-secondary: #9ca3af;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            --surface: rgba(30, 41, 59, 0.85);
+            --surface-solid: rgba(30, 41, 59, 0.95);
+            --nav-bg: rgba(15, 23, 42, 0.8);
+            --border: rgba(255, 255, 255, 0.15);
+            --border-light: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            --shadow-glass-hover: 0 15px 35px 0 rgba(0, 0, 0, 0.6);
+            --badge-info-bg: rgba(30, 58, 138, 0.5);
+            --badge-info-text: #93c5fd;
+            --badge-success-bg: rgba(6, 95, 70, 0.5);
+            --badge-success-text: #6ee7b7;
+            --badge-error-bg: rgba(153, 27, 27, 0.5);
+            --badge-error-text: #fca5a5;
+            --table-header-bg: rgba(30, 41, 59, 0.8);
+            --ai-box-bg: rgba(30, 41, 59, 0.6);
+            --img-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: color 0.4s ease;
+        }
+
+        body::before {
+            /* Smooth background transition hack */
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-gradient);
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        /* Navbar */
+        nav {
+            background: var(--nav-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.4s ease;
+        }
+
+        .brand svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3 {
+            color: var(--text);
+            transition: color 0.4s ease;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            margin-bottom: 2rem;
+            transition: color 0.4s ease;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            /* Transparent in dark, slight in light */
+            color: var(--text);
+            border: 1px solid var(--border);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: var(--border-light);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Glassmorphism Cards */
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-glass);
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-glass-hover);
+            border-color: var(--primary);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: var(--img-bg);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .price {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text);
+        }
+
+        .rating {
+            color: var(--warning);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.35rem;
+        }
+
+        /* Verification Steps */
+        .verif-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem;
+            border-radius: 12px;
+            background: var(--ai-box-bg);
+            border: 1px solid var(--border-light);
+            margin-bottom: 0.75rem;
+            transition: all 0.4s ease;
+        }
+
+        .verif-step.pending {
+            opacity: 0.6;
+        }
+
+        .verif-step.active {
+            opacity: 1;
+            transform: translateX(5px);
+            border-left: 4px solid var(--primary);
+            background: var(--badge-info-bg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .verif-step.success {
+            opacity: 1;
+            border-left: 4px solid var(--success);
+            background: var(--badge-success-bg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .verif-step.error {
+            opacity: 1;
+            border-left: 4px solid var(--danger);
+            background: var(--badge-error-bg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        [data-theme="light"] .spinner {
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-top-color: var(--primary);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Result Banners */
+        .result-banner {
+            text-align: center;
+            padding: 3.5rem 2rem;
+            border-radius: var(--radius);
+            background: var(--surface-solid);
+            box-shadow: var(--shadow-glass-hover);
+            border: 1px solid var(--border);
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .result-success .result-icon {
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+
+        .result-error .result-icon {
+            background: linear-gradient(135deg, var(--danger), #b91c1c);
+        }
+
+        /* AI Analysis UI */
+        .ai-scanner {
+            position: relative;
+            background: var(--ai-box-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            text-align: left;
+            font-style: italic;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+            box-shadow: 0 0 15px 2px var(--primary);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .scanning .scan-line {
+            opacity: 1;
+            animation: scanAnim 2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+        }
+
+        @keyframes scanAnim {
+            from {
+                top: 0;
+            }
+
+            to {
+                top: 100%;
+            }
+        }
+
+        .trust-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--success);
+            border: 8px solid var(--success);
+            margin-bottom: 1rem;
+            transition: all 1s ease;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+            background: var(--surface-solid);
+        }
+
+        /* Audit Log Table */
+        .table-responsive {
+            overflow-x: auto;
+            background: var(--border-light);
+            border-radius: 12px;
+            padding: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 0.5rem;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--table-header-bg);
+        }
+
+        th:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge-success {
+            background: var(--badge-success-bg);
+            color: var(--badge-success-text);
+        }
+
+        .badge-info {
+            background: var(--badge-info-bg);
+            color: var(--badge-info-text);
+        }
+
+        .badge-error {
+            background: var(--badge-error-bg);
+            color: var(--badge-error-text);
+        }
+
+        /* Order Input Field Highlight */
+        .order-field-box {
+            background: var(--badge-info-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border: 1px dashed var(--primary);
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+        }
+
+        .verified-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Default to checking local storage inline to avoid flash -->
+    <script>
+        const storedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', storedTheme);
+    </script>
+
+    <nav>
+        <div class="brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M9 12l2 2 4-4"></path>
+            </svg>
+            VeriTrust AI
+        </div>
+        <div style="display:flex; gap: 1rem;">
+            <button id="themeToggleBtn" class="btn btn-outline" onclick="toggleTheme()" style="min-width: 140px;">🌙
+                Dark Mode</button>
+            <button class="btn btn-outline" onclick="resetDemo()">Restart Demo</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- ==========================================
+             SCREEN 1: Product Listing 
+             ========================================== -->
+        <div id="screen-1" class="screen active">
+            <h2>Featured Products</h2>
+            <p class="subtitle">Select a product to test the VeriTrust review process.</p>
+
+            <div class="grid" id="productGrid">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 2: Review Submission 
+             ========================================== -->
+        <div id="screen-2" class="screen">
+            <button class="btn btn-outline" style="margin-bottom: 2rem;" onclick="goToScreen(1)">← Back to
+                Products</button>
+            <div class="card">
+                <div
+                    style="display: flex; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+                    <img id="s2-img" src="" alt="Product"
+                        style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div>
+                        <h3 id="s2-title">Product Name</h3>
+                        <p class="subtitle" style="margin-bottom: 0;">You are writing a review for this item.</p>
+                    </div>
+                </div>
+
+                <form id="reviewForm" onsubmit="handleReviewSubmit(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" class="form-control" id="f_name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" class="form-control" id="f_phone" required placeholder="+1 234 567 8900">
+                        </div>
+                        <div class="form-group">
+                            <label>Email ID</label>
+                            <input type="email" class="form-control" id="f_email" required
+                                placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Customer ID (Optional)</label>
+                            <input type="text" class="form-control" id="f_customerId" placeholder="CUST-8890">
+                        </div>
+                    </div>
+
+                    <div class="form-group order-field-box">
+                        <label style="color: var(--primary);">Order ID / Bill ID <span
+                                style="color:var(--danger)">*</span></label>
+                        <input type="text" class="form-control" id="f_orderId" required placeholder="Enter Order ID">
+                        <div class="hint" style="color: var(--primary);"><strong>Demo Note:</strong> Use predefined demo
+                            credentials to pass verification.<br>
+                            <code
+                                style="background:var(--badge-info-bg); color:var(--badge-info-text); padding:2px 6px; border-radius:4px; font-weight:600; display:inline-block; margin-top:5px; margin-bottom:5px;">Alice Smith | +1 234 567 8900 | alice@example.com | ORD-1001 (Product 1)</code><br>
+                            <code
+                                style="background:var(--badge-info-bg); color:var(--badge-info-text); padding:2px 6px; border-radius:4px; font-weight:600; display:inline-block;">Bob Johnson | +1 987 654 3210 | bob@example.com | ORD-1002 (Product 2)</code>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select class="form-control" id="f_rating" required>
+                            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                            <option value="4">⭐⭐⭐⭐ Good</option>
+                            <option value="3">⭐⭐⭐ Average</option>
+                            <option value="2">⭐⭐ Poor</option>
+                            <option value="1">⭐ Terrible</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Review Text</label>
+                        <textarea class="form-control" id="f_review" required
+                            placeholder="Write your authentic experience here..."></textarea>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button type="submit" class="btn">Submit for Verification →</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 3: Purchase Verification 
+             ========================================== -->
+        <div id="screen-3" class="screen">
+            <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 3rem 2rem;">
+                <h2>Verifying Purchase Authenticity...</h2>
+                <p class="subtitle">Checking backend ledger via VeriTrust AI</p>
+
+                <div style="text-align: left; margin: 2rem 0; width: 100%;">
+                    <div class="verif-step pending" id="v-step-1">
+                        <div class="step-icon">
+                            <div class="spinner"></div>
+                        </div>
+                        <div><strong>Customer Validation</strong>
+                            <div class="hint">Checking user account standing...</div>
+                        </div>
+                    </div>
+                    <div class="verif-step pending" id="v-step-2">
+                        <div class="step-icon">○</div>
+                        <div><strong>Order ID Match</strong>
+                            <div class="hint">Cross-referencing Order ID with Product Ledger...</div>
+                        </div>
+                    </div>
+                    <div class="verif-step pending" id="v-step-3">
+                        <div class="step-icon">○</div>
+                        <div><strong>Payment & Delivery Status</strong>
+                            <div class="hint">Confirming item was physically delivered...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 4: Verification Result 
+             ========================================== -->
+        <div id="screen-4" class="screen">
+            <!-- Success Banner -->
+            <div id="result-success" class="result-banner result-success"
+                style="display:none; max-width: 600px; margin: 0 auto;">
+                <div class="result-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2 style="color: var(--success); margin-bottom: 0.5rem;">Verified Buyer – Review Allowed</h2>
+                <p class="subtitle">Purchase confirmed. Your review is now ready for AI content analysis.</p>
+                <button class="btn btn-success" onclick="startAIAnalysis()" style="margin-top: 1.5rem;">Proceed to AI
+                    Analysis →</button>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="result-error" class="result-banner result-error"
+                style="display:none; max-width: 600px; margin: 0 auto;">
+                <div class="result-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+                <h2 style="color: var(--danger); margin-bottom: 0.5rem;">Verification Failed – Review Blocked</h2>
+                <p class="subtitle">We could not confirm a valid purchase or delivery for this Order ID. To maintain
+                    trust, posting a review is blocked.</p>
+                <div
+                    style="background:var(--badge-error-bg); border: 1px solid var(--danger); padding:1.2rem; border-radius:10px; margin:1.5rem 0; text-align:left; font-size:0.9rem;">
+                    <strong>Reason Code:</strong> <span id="error-reason-code">ERR_NO_PURCHASE_FOUND</span><br>
+                    <strong>Action:</strong> Review System Rejected
+                </div>
+                <button class="btn btn-outline" onclick="goToScreen(2)">Try Again (Fix Order ID)</button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 5: AI Review Analysis 
+             ========================================== -->
+        <div id="screen-5" class="screen">
+            <div class="card" style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 2rem;">
+                <h2>AI Review Analysis</h2>
+                <p class="subtitle">Scanning for bot behavior, spam, and genuine sentiment...</p>
+
+                <div class="ai-scanner scanning" id="ai-scanner-box">
+                    <div class="scan-line"></div>
+                    <p id="s5-review-text">"Review text appears here..."</p>
+                </div>
+
+                <div id="ai-results" style="display: none; transform: scale(0.9); opacity: 0; transition: all 0.5s;">
+                    <div class="trust-score">
+                        <div class="score-circle">98<span style="font-size:1.5rem">%</span></div>
+                        <h3
+                            style="color: var(--success); display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                <path d="M9 12l2 2 4-4"></path>
+                            </svg>
+                            Genuine Human Review
+                        </h3>
+                    </div>
+
+                    <div class="grid"
+                        style="grid-template-columns: 1fr 1fr; gap:1.5rem; text-align:left; margin-bottom:2.5rem;">
+                        <div
+                            style="background:var(--ai-box-bg); padding:1.2rem; border-radius:10px; border: 1px solid var(--border-light);">
+                            <strong>AI Note</strong><br>
+                            <span class="hint" style="font-size:0.9rem;">No algorithmic patterns, excessive keywords, or
+                                bot behavior detected. Organic human language verified.</span>
+                        </div>
+                        <div
+                            style="background:var(--ai-box-bg); padding:1.2rem; border-radius:10px; border: 1px solid var(--border-light);">
+                            <strong>Sentiment</strong><br>
+                            <span class="hint" style="font-size:0.9rem;">Constructive review matching product features.
+                                Safe to securely publish.</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="publishReview()">Publish Authenticated Review</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 6: Audit Log / Final Display 
+             ========================================== -->
+        <div id="screen-6" class="screen">
+            <div class="card" style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                    Live Public Page (Simulated)
+                    <span class="badge badge-success">Review Published</span>
+                </h3>
+
+                <div
+                    style="background: var(--ai-box-bg); border: 1px solid var(--border-light); border-radius:12px; padding: 1.5rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 1rem;">
+                        <div style="display:flex; gap:1rem; align-items:center;">
+                            <div style="width:45px; height:45px; background:linear-gradient(135deg, var(--primary), #818cf8); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.4rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);"
+                                id="s6-initial">J</div>
+                            <div>
+                                <div style="font-weight:600; display:flex; align-items:center;" id="s6-name">
+                                    John Doe
+                                    <span class="verified-badge" title="Purchase Verified by VeriTrust">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Verified Buyer
+                                    </span>
+                                </div>
+                                <div class="hint" id="s6-date" style="margin-top: 0.1rem;">Oct 10, 2023</div>
+                            </div>
+                        </div>
+                        <div style="color:var(--warning); font-size:1.3rem;" id="s6-stars">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div style="background:var(--input-bg); padding:1.2rem; border-radius:8px; font-style:italic; font-size: 1.05rem;"
+                        id="s6-review-text">
+                        "Great product..."
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>VeriTrust Audit Log</h2>
+                <p class="subtitle">Secure, immutable record of the verification process</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Action/Event</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 2.5rem; text-align: center;">
+                    <button class="btn btn-outline" onclick="resetDemo()">Start New Demo Session</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT LOGIC
+         ========================================== -->
+    <script>
+        // Mock Database for Demo
+        const mockDatabase = [
+            { name: "Alice Smith", phone: "+1 234 567 8900", email: "alice@example.com", customerId: "CUST-001", orderId: "ORD-1001", productId: 1, paymentStatus: "Paid", deliveryStatus: "Delivered" },
+            { name: "Bob Johnson", phone: "+1 987 654 3210", email: "bob@example.com", customerId: "CUST-002", orderId: "ORD-1002", productId: 2, paymentStatus: "Paid", deliveryStatus: "Delivered" },
+            { name: "Charlie Davis", phone: "+1 555 123 4567", email: "charlie@example.com", customerId: "CUST-003", orderId: "ORD-1003", productId: 3, paymentStatus: "Paid", deliveryStatus: "Delivered" }
+        ];
+
+        // Updated placeholder images to reliable high-quality URLs suited for a premium aesthetic
+        const products = [
+            { id: 1, name: "Sony WH-1000XM5 Noise Canceling Headphones", price: "$348.00", rating: "4.8 (1,204)", img: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=400&q=80", desc: "Industry leading noise cancellation, premium audio." },
+            { id: 2, name: "Apple MacBook Pro M3 (14-inch)", price: "$1,599.00", rating: "4.9 (842)", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=400&q=80", desc: "Supercharged by M3 pro chip. Brilliant Liquid Retina display." },
+            { id: 3, name: "Nike Air Max 270 Sneakers", price: "$150.00", rating: "4.6 (3,110)", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80", desc: "Extremely comfortable lifestyle shoe. Large air unit." },
+            { id: 4, name: "Breville Barista Espresso Machine", price: "$699.95", rating: "4.7 (520)", img: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?auto=format&fit=crop&w=400&q=80", desc: "Create third wave specialty coffee at home." },
+            { id: 5, name: "Samsung Galaxy S24 Ultra", price: "$1,299.00", rating: "4.8 (950)", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=400&q=80", desc: "Titanium exterior. The ultimate smartphone AI experience." }
+        ];
+
+        // State variables
+        let selectedProduct = null;
+        let submittedData = {};
+        let auditLogs = [];
+        let isVerified = false;
+
+        // Initialize App
+        function init() {
+            updateThemeToggleButton();
+            renderProducts();
+            goToScreen(1);
+        }
+
+        // Theme Toggle Logic
+        function toggleTheme() {
+            let currentStr = document.documentElement.getAttribute('data-theme');
+            let newTheme = currentStr === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggleButton();
+        }
+
+        function updateThemeToggleButton() {
+            let currentStr = document.documentElement.getAttribute('data-theme');
+            const btn = document.getElementById('themeToggleBtn');
+            if (currentStr === 'dark') {
+                btn.innerHTML = '☀️ Light Mode';
+            } else {
+                btn.innerHTML = '🌙 Dark Mode';
+            }
+        }
+
+        function logEvent(action, statusBadge, details) {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            auditLogs.push({ time, action, statusBadge, details });
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            products.forEach(p => {
+                grid.innerHTML += `
+                    <div class="card product-card">
+                        <img src="${p.img}" class="product-img" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80'">
+                        <div class="product-meta">
+                            <span class="price">${p.price}</span>
+                            <span class="rating">★ ${p.rating}</span>
+                        </div>
+                        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; height: 50px; overflow:hidden;">${p.name}</h3>
+                        <p class="subtitle" style="font-size:0.9rem; margin-bottom: 1.5rem; height:40px; overflow:hidden;">${p.desc}</p>
+                        <button class="btn" style="width: 100%;" onclick="selectProduct(${p.id})">Write a Review</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Screen Navigation
+        function goToScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const screen = document.getElementById(`screen-${num}`);
+            if (screen) screen.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Step 1 -> 2
+        function selectProduct(id) {
+            selectedProduct = products.find(p => p.id === id);
+
+            // Setup Screen 2
+            document.getElementById('s2-img').src = selectedProduct.img;
+            document.getElementById('s2-title').textContent = selectedProduct.name;
+
+            // Clear form
+            document.getElementById('reviewForm').reset();
+
+            // Reset logs
+            auditLogs = [];
+            logEvent('Product Selected', '<span class="badge badge-info">Started</span>', `Selected: ${selectedProduct.name}`);
+
+            goToScreen(2);
+        }
+
+        // Step 2 -> 3
+        function handleReviewSubmit(e) {
+            e.preventDefault();
+
+            // capture data
+            submittedData = {
+                name: document.getElementById('f_name').value,
+                phone: document.getElementById('f_phone').value,
+                email: document.getElementById('f_email').value,
+                orderId: document.getElementById('f_orderId').value,
+                rating: parseInt(document.getElementById('f_rating').value),
+                review: document.getElementById('f_review').value,
+                productId: selectedProduct.id
+            };
+
+            logEvent('Review Form Submitted', '<span class="badge badge-info">Processing</span>', `Order ID: ${submittedData.orderId}`);
+            logEvent('VeriTrust Check Initiated', '<span class="badge badge-info">System</span>', 'Connecting to order ledger...');
+
+            goToScreen(3);
+            runVerificationSimulation();
+        }
+
+        // Step 3 Simulation Logic
+        function runVerificationSimulation() {
+            const s1 = document.getElementById('v-step-1');
+            const s2 = document.getElementById('v-step-2');
+            const s3 = document.getElementById('v-step-3');
+
+            // Reset UI
+            [s1, s2, s3].forEach(el => {
+                el.className = 'verif-step pending';
+                el.querySelector('.step-icon').innerHTML = '○';
+            });
+
+            // Verification Logic Here
+            let failReason = "";
+            let failStep = 0; // 0 means success
+
+            const record = mockDatabase.find(r => r.orderId === submittedData.orderId);
+
+            if (!record) {
+                failReason = "Invalid Order ID";
+                failStep = 1;
+            } else if (record.name !== submittedData.name || record.phone !== submittedData.phone || record.email !== submittedData.email) {
+                failReason = "Details do not match";
+                failStep = 1;
+            } else if (record.productId !== submittedData.productId) {
+                failReason = "Product not purchased";
+                failStep = 2;
+            } else if (record.paymentStatus !== "Paid") {
+                failReason = "Payment not completed";
+                failStep = 3;
+            } else if (record.deliveryStatus !== "Delivered") {
+                failReason = "Not delivered";
+                failStep = 3;
+            }
+
+            // Start animation sequence
+            setTimeout(() => { activateStep(s1); }, 100);
+
+            setTimeout(() => {
+                if (failStep === 1) {
+                    errorStep(s1);
+                    finishVerificationSync(false, failReason);
+                    return;
+                }
+                successStep(s1);
+                activateStep(s2);
+
+                setTimeout(() => {
+                    if (failStep === 2) {
+                        errorStep(s2);
+                        finishVerificationSync(false, failReason);
+                        return;
+                    }
+                    successStep(s2);
+                    activateStep(s3);
+
+                    setTimeout(() => {
+                        if (failStep === 3) {
+                            errorStep(s3);
+                            finishVerificationSync(false, failReason);
+                            return;
+                        }
+                        successStep(s3);
+                        finishVerificationSync(true, "");
+                    }, 1200);
+                }, 1200);
+            }, 1200);
+        }
+
+        function activateStep(el) {
+            el.className = 'verif-step active';
+            el.querySelector('.step-icon').innerHTML = '<div class="spinner"></div>';
+        }
+        function successStep(el) {
+            el.className = 'verif-step success';
+            el.querySelector('.step-icon').innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        }
+        function errorStep(el) {
+            el.className = 'verif-step error';
+            el.querySelector('.step-icon').innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+        }
+
+        // Step 3 -> 4
+        function finishVerificationSync(success, reason) {
+            isVerified = success;
+            setTimeout(() => {
+                goToScreen(4);
+                if (success) {
+                    document.getElementById('result-success').style.display = 'block';
+                    document.getElementById('result-error').style.display = 'none';
+                    logEvent('Purchase Verified', '<span class="badge badge-success">Verified</span>', 'All order & delivery data matches.');
+                } else {
+                    document.getElementById('result-success').style.display = 'none';
+                    document.getElementById('result-error').style.display = 'block';
+
+                    const reasonElement = document.getElementById('error-reason-code');
+                    if (reasonElement) {
+                        reasonElement.textContent = reason;
+                    }
+
+                    logEvent('Verification Failed', '<span class="badge badge-error">Blocked</span>', 'Reason: ' + reason);
+                }
+            }, 600);
+        }
+
+        // Step 4 -> 5
+        function startAIAnalysis() {
+            logEvent('AI Analysis Started', '<span class="badge badge-info">Scanning</span>', 'Checking for bot patterns and language sentiment.');
+            goToScreen(5);
+
+            document.getElementById('s5-review-text').textContent = `"${submittedData.review}"`;
+            document.getElementById('ai-scanner-box').classList.add('scanning');
+            document.getElementById('ai-results').style.display = 'none';
+            document.getElementById('ai-results').style.opacity = '0';
+            document.getElementById('ai-results').style.transform = 'scale(0.9)';
+
+            setTimeout(() => {
+                document.getElementById('ai-scanner-box').classList.remove('scanning');
+                document.getElementById('ai-results').style.display = 'block';
+
+                // Animate pop in
+                setTimeout(() => {
+                    document.getElementById('ai-results').style.opacity = '1';
+                    document.getElementById('ai-results').style.transform = 'scale(1)';
+                }, 50);
+
+                logEvent('AI Analysis Complete', '<span class="badge badge-success">Passed</span>', 'Score: 98%. Authentic human review.');
+
+            }, 2500);
+        }
+
+        // Step 5 -> 6
+        function publishReview() {
+            logEvent('Review Published', '<span class="badge badge-success">Live</span>', 'Review successfully added to product page.');
+
+            // Populate S6 review card
+            document.getElementById('s6-initial').textContent = submittedData.name.charAt(0).toUpperCase();
+            document.getElementById('s6-name').innerHTML = `${submittedData.name} <span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified Buyer</span>`;
+            document.getElementById('s6-stars').textContent = '⭐'.repeat(submittedData.rating);
+            document.getElementById('s6-review-text').textContent = `"${submittedData.review}"`;
+
+            const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            document.getElementById('s6-date').textContent = today;
+
+            // Populate Audit Table
+            const tbody = document.getElementById('auditTableBody');
+            tbody.innerHTML = '';
+            auditLogs.forEach(lg => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-family:monospace; font-size:0.9rem;">${lg.time}</td>
+                        <td style="font-weight:500;">${lg.action}</td>
+                        <td>${lg.statusBadge}</td>
+                        <td class="hint" style="margin:0;">${lg.details}</td>
+                    </tr>
+                `;
+            });
+
+            goToScreen(6);
+        }
+
+        // Global Reset
+        function resetDemo() {
+            selectedProduct = null;
+            submittedData = {};
+            auditLogs = [];
+            isVerified = false;
+            goToScreen(1);
+        }
+
+        // Run Init
+        window.onload = init;
+    </script>
+</body>
+
+</html>
